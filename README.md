@@ -24,5 +24,3 @@
     2. follow the scripts in the end (comments) of main.py
     3. entry to draw figures is figures/draw_script.py
     4. follow the scripts in the end (comments) of figures/draw_script.py to draw figures
-    
-    
