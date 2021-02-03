@@ -1,0 +1,2 @@
+dns_1k.dat contains # of queries coming in per second 
+google_1k.dat contains # of queries coming in per second which have their SLD = 'google.com' 
