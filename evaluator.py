@@ -38,7 +38,6 @@ class Evaluator(object):
 
     def eval_ell_est(self, methods):
 
-        exepected_exp_round = 100
         n_query = 50
 
         result_dict = {}
@@ -48,13 +47,15 @@ class Evaluator(object):
         self.users.n = len(self.users.data)
         self.users.m = self.args.m
 
-        range_estimator = RangeEstimatorFactory.create_estimator('guess_hierarchy', self.users, self.args)
-        range_estimator.epsilon = self.args.range_epsilon / range_estimator.num_levels
         # large means we are using LDP
         if self.args.vary in ['eps_large', 'eps_ldp']:
+            exepected_exp_round = 30
             range_estimator = RangeEstimatorFactory.create_estimator('hm', self.users, self.args)
             range_estimator.epsilon = self.args.range_epsilon
-            # exepected_exp_round = 4
+        else:
+            exepected_exp_round = 100
+            range_estimator = RangeEstimatorFactory.create_estimator('guess_hierarchy', self.users, self.args)
+            range_estimator.epsilon = self.args.range_epsilon / range_estimator.num_levels
 
         self.range_estimator = range_estimator
         zeros = np.zeros_like(data_hie)
@@ -69,7 +70,7 @@ class Evaluator(object):
                 ell = percentile_estimator.obtain_ell(self.args.p)
 
                 if self.args.exp_round == 1:
-                    print(method, ell)
+                    logger.info(f'{method}, {ell}')
 
                 if ell == 0:
                     est = zeros
@@ -81,6 +82,10 @@ class Evaluator(object):
 
         # baseline is always outputing 0
         result_dict['baseline'] = [self.metric(data_hie, zeros, query_indexes)]
+
+        # second baseline is even worse
+        # zeros[:] = 0.1 * self.users.max_ell
+        # result_dict['baseline2'] = [self.metric(data_hie, zeros, query_indexes)]
 
         return result_dict
 

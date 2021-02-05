@@ -20,7 +20,7 @@ class PlotScript(Plot):
             ],
             'ell': [
                 'svt',
-                'em_mse',
+                'nm_mse',
                 'nm',
                 'np_p',
                 'np_mse',
@@ -44,14 +44,15 @@ class PlotScript(Plot):
         }
         self.method_names = {
             'svt_hie': 'ToPS',
-            'svt_bt': 'EM-E',
+            'svt_bt': 'NM-E',
             'ss_hie': '$\\hat{H}^c_{16}$',
             'pak': 'PAK',
             'sw_hm': 'ToPL',
             'truth': 'True',
 
             'svt': 'SVT-P',
-            'em_mse': 'EM-E',
+            'em_mse': 'NM-E',
+            'nm_mse': 'NM-E',
             'pf_mse': 'PF-E',
             'nm': 'EM-P',
             'np_p': 'NP-P',
@@ -84,6 +85,7 @@ class PlotScript(Plot):
         }
         self.method_indexs = {
             'em_mse': 0,
+            'nm_mse': 0,
             'pf_mse': 5,
             'smooth': 1,
             'smooth_pak': 2,
@@ -159,10 +161,9 @@ class PlotScript(Plot):
             ]
         elif 'ell' in metric:
             methods = [
-                # 'svt',
-                # 'nm',
-                'pf_mse',
-                'em_mse',
+                'nm_mse',
+                # 'em_mse',
+                # 'pf_mse',
                 'smooth',
                 'smooth_pak',
                 'baseline',
@@ -383,14 +384,13 @@ if __name__ == "__main__":
     # plot.eps('eps_range_small', 'ell_est', 4096)
 
     # Compare different method to find the threshold
-    plot.user_types = ['dns_1k', 'pos', 'fare', 'kosarak']
+    # plot.user_types = ['dns_1k', 'pos', 'fare', 'kosarak']
     # plot.eps('eps_medium', 'er0_ell_est', 65536)
 
     # Compare different methods to find threshold in LDP
     # plot.user_types = ['dns_1k', 'pos', 'fare', 'kosarak']
-    plot.eps('eps_ldp', 'er10_ell_est', 65536)
+    # plot.eps('eps_ldp', 'er10_ell_est', 65536)
 
     # ToPL visualization
     # plot.user_types = ['dns_1k']
     # plot.precise('eps_ldp', 65536)
-

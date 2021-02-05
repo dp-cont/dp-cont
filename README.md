@@ -1,3 +1,5 @@
+This is the project code for ToPS: Continuous Release of Data Streams under both Centralized and Local Differential Privacy.  Instructions: 
+
 0. install and use anaconda
     1. create environment in the server: conda env create -f environment.yml; source activate db_code
     2. share the environment: conda env export > environment.yml

@@ -1,8 +1,6 @@
 from percentile_estimator.em_mse import EMMSE
 from percentile_estimator.nm_mse import NMMSE
 from percentile_estimator.pf_mse import PFMSE
-from percentile_estimator.fo import FO
-from percentile_estimator.fo_mse import FOMSE
 from percentile_estimator.laplace import Laplace
 from percentile_estimator.np_p import NPP
 from percentile_estimator.smooth import Smooth
@@ -33,10 +31,6 @@ class PercentileEstimatorFactory(object):
             if len(name) > 4:
                 p = float(name[4:])
                 estimator.p = p
-        elif name == 'fo':
-            estimator = FO(users, args)
-        elif name == 'fo_mse':
-            estimator = FOMSE(users, args)
         elif name == 'sw':
             estimator = SW(users, args)
         elif name == 'sws':
