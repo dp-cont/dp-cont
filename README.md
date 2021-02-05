@@ -26,5 +26,3 @@ This is the project code for ToPS: Continuous Release of Data Streams under both
     2. follow the scripts in the end (comments) of main.py
     3. entry to draw figures is figures/draw_script.py
     4. follow the scripts in the end (comments) of figures/draw_script.py to draw figures
-    
-    
