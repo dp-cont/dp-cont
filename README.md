@@ -1,26 +1,44 @@
-0. install and use anaconda
-    1. create environment in the server: conda env create -f environment.yml; source activate db_code
-    2. share the environment: conda env export > environment.yml
-    3. or create a new one: conda create -n myenv; conda activate myenv; conda install numpy, pandas, scipy, matplotlib 
-1. if using pycharm
-    1. create remote environment
-    2. upload to server
-2. project structure
-    - estimator: the whole thing estimator
-    - percentile_estimator
-    - hierarchy_estimator
-    - evo_percentile_estimator: several method to update percentile estimations; deprecated now 
-    ***
-    - results 
-    - figures (currently the figures are output the the overleaf destination directly)
-    - data
-    - users (for processing the data)
-    ***
-    - main
-    - evaluator
-    - recorder (writing to result)
-3. how to run the code
-    1. entry is main.py
-    2. follow the scripts in the end (comments) of main.py
-    3. entry to draw figures is figures/draw_script.py
-    4. follow the scripts in the end (comments) of figures/draw_script.py to draw figures
+
+   
+Continuous Release of Data Streams under both Centralized and Local Differential Privacy
+=====
+
+This repository provides code to accompany the paper Continuous Release of Data Streams under both Centralized and Local Differential Privacy which was accepted to ACM Conference on Computer and Communications Security (CCS) 2021.
+
+
+Installing
+=====
+
+The code should work with Python 3 plus common libraries such as numpy, pandas, pickle, scipy, matplotlib.  
+
+Project Organization
+=====
+
+- estimator: the whole estimator (this folder contains different variants); it calls percentile_estimator and hierarchy_estimator 
+- percentile_estimator: estimate the percentile using the first $m$ values
+- hierarchy_estimator: working on the remaining data  
+***
+- results: folder for holding the results
+- figures: currently the figures are output the overleaf destination directly
+- data
+- users: for processing the data
+***
+- main.py: the main file of the project
+- evaluator.py: measure the accuracy/utility of the results from main.py  
+- recorder.py: writing experimental results to local files within the results folder 
+
+Reproducing Results
+=====
+
+1. go into main.py
+2. follow the scripts in the comments of main.py: uncomment some to get desired results
+3. go into figures/draw_script.py
+4. follow the scripts in the end (comments) of figures/draw_script.py to draw figures
+
+
+Building on this Work
+=====
+
+We encourage others to improve our work and to integrate it with their own applications. We provide it under the MIT license.  Contact: Tianhao Wang at tianhao@cmu.edu.
+
+

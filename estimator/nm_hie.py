@@ -3,7 +3,8 @@ from percentile_estimator.estimator_factory import PercentileEstimatorFactory
 from range_estimator.estimator_factory import RangeEstimatorFactory
 
 
-class SvtHie(Estimator):
+# ToPS
+class NMHie(Estimator):
 
     def __init__(self, users, args):
         Estimator.__init__(self, users, args)
