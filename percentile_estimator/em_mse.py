@@ -24,6 +24,7 @@ class EMMSE(Estimator):
         c = 60
         noise_var = 2 * (16 - 1) * num_levels ** 3 / self.args.range_epsilon ** 2
         noise_std = noise_var ** 0.5 * 3 * self.users.m / (self.users.n - self.users.m) / c
+        # print(noise_std)
 
         n = len(data)
 

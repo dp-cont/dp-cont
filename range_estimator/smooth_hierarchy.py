@@ -18,21 +18,12 @@ class SmoothHierarchy(Hierarchy):
             self.g = self.opt_g()
 
         self.num_levels = int(math.log(self.n / self.g, self.fanout))
-        self.epsilon = self.args.range_epsilon / self.num_levels
+        self.epsilon = self.args.epsilon / self.num_levels
         self.granularities = [self.g * self.fanout ** h for h in range(self.num_levels)]
 
     def opt_g(self):
         def f(x):
-            # here x denotes b^s. in the equation in paper (optimizing s).
-            # the first part is variance
-            # the second part is bias squared
-            #  for bias, we assume the bias for each value is theta / 3,
-            #  and bias is theta / 3 multiplied by the average number of values in a query.
-            #  assuming there are x/2 values in a query, we have average squared bias x^2/36
-            # the calculation for the squared average value in a query can be more complicated
-            # but we keep it simple as we can only approximate each value's bias to be theta / 3
-            return 2 * (self.fanout - 1) * (math.log(self.args.r / x) / math.log(self.fanout)) ** 3 / (self.args.range_epsilon ** 2) \
-                   + x ** 2 / 36
+            return 8 * (self.fanout - 1) * math.log(self.args.r / x) ** 3 / (self.args.epsilon ** 2) + x - 1
 
         g = int(optimize.fmin(f, 256, disp=False)[0])
         g_exp = math.log(g, self.fanout)
@@ -45,6 +36,8 @@ class SmoothHierarchy(Hierarchy):
         return count[0]
 
     def guess(self, ell, hie_leaf, method=None):
+        if not method:
+            method = self.name
 
         if method == 'naive_smoother':
             u_list = hie_leaf

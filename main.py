@@ -162,17 +162,19 @@ parser.add_argument('--range_epsilon', type=float, default=1,
 parser.add_argument('--p', type=float, default=0.995,
                     help='specify the percentile')
 parser.add_argument('--s', type=float, default=1,
-                    help='specify the step size of NM/EM/SVT (default 1)')
+                    help='specify the step size of EM/SVT (default 1)')
 parser.add_argument('--m', type=int, default=65536,
                     help='specify the number of users to hold')
 parser.add_argument('--g', type=int, default=0,
                     help='specify the guessed leaf nodes (if 0, calculate online)')
-parser.add_argument('--r', type=int, default=1048576,
+parser.add_argument('--r', type=int, default=65536,
                     help='specify the max interested range')
 parser.add_argument('--hie_fanout', type=int, default=16,
                     help='specify the fanout of the hierarchy')
 parser.add_argument('--exp_smooth_a', type=float, default=0.6,
                     help='specify the parameter of exponential smoothing')
+parser.add_argument('--moving_w', type=int, default=4,
+                    help='specify the sliding window')
 
 # experiment parameter
 parser.add_argument('--vary', type=str, default='none',
@@ -193,11 +195,12 @@ parser.add_argument('--user_type', type=str, default='adult',
                     help='specify the type of the data [synthesize, password, url]')
 
 args = parser.parse_args()
+# pre_main()
 
 
 def general_main(vary, metric,
                  user_types=('dns_1k', 'pos', 'fare', 'kosarak'),
-                 epsilon=0.05, range_epsilon=0.05, m=65536, exp_round=10,
+                 epsilon=0.05, range_epsilon=0.05, m=65536, exp_round=1,
                  methods=None, percentile_methods=None, range_methods=None, smooth_methods=None
                  ):
     args.metric = metric
@@ -234,13 +237,12 @@ def general_main(vary, metric,
 # general_main('eps_range_small', 'ell_est', m=4096, user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
 
 # Compare different method to find the threshold
-# general_main('eps_medium', 'ell_est', percentile_methods=['nm_mse', 'smooth', 'smooth_pak'])
+# general_main('eps_medium', 'ell_est', percentile_methods=['em_mse', 'pf_mse', 'smooth', 'smooth_pak'])
+general_main('eps_medium', 'ell_est', percentile_methods=['em_mse'])
+# general_main('eps_medium', 'ell_est', percentile_methods=['pf_mse', 'em_mse'])
 
 # Compare different method to find threshold in LDP
 # general_main('eps_ldp', 'ell_est', range_epsilon=1, percentile_methods=['sw_mse', 'sws_mse'])
 
 # ToPL visualization
 # general_main('eps_ldp', 'precise', user_types=['dns_1k'], exp_round=1, methods=['sw_hm'])
-
-# experiment
-# pre_main()

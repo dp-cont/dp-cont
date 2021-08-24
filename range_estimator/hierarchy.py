@@ -13,12 +13,12 @@ class Hierarchy(Estimator):
         self.fanout = self.args.hie_fanout
         self.n = self.users.n - self.users.m
         self.num_levels = int(math.log(self.n, self.fanout))
-        self.epsilon = self.args.range_epsilon / self.num_levels
+        self.epsilon = self.args.epsilon / self.num_levels
         self.granularities = [self.fanout ** h for h in range(self.num_levels)]
 
     def update_fanout(self):
         self.num_levels = int(math.log(self.n, self.fanout))
-        self.epsilon = self.args.range_epsilon / self.num_levels
+        self.epsilon = self.args.epsilon / self.num_levels
         self.granularities = [self.fanout ** h for h in range(self.num_levels)]
 
     def est_hierarchy(self, ell):

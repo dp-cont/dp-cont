@@ -81,6 +81,67 @@ def pf(q_ans, eps, sensitivity=1, monotonic=True):
 '''some LDP primitives'''
 
 
+def fo(real_dist, eps):
+    domain_size = len(real_dist)
+    if domain_size > np.exp(eps) * 3 + 2:
+        est_dist = ue(real_dist, eps)
+    else:
+        est_dist = rr(real_dist, eps)
+    return norm_sub(sum(real_dist), est_dist)
+
+
+def norm_sub(n, est_dist):
+    estimates = np.copy(est_dist)
+    while (np.fabs(sum(estimates) - n) > 1) or (estimates < 0).any():
+        estimates[estimates < 0] = 0
+        total = sum(estimates)
+        mask = estimates > 0
+        diff = (n - total) / sum(mask)
+        estimates[mask] += diff
+    return estimates
+
+
+def ue(real_dist, eps):
+    p = 0.5
+    q = 1 / (np.exp(eps) + 1)
+    n = sum(real_dist)
+
+    tmp_dist = np.copy(real_dist)
+    est_dist = np.random.binomial(tmp_dist, p)
+
+    tmp_dist = np.copy(real_dist)
+    tmp_dist = n - tmp_dist
+    est_dist += np.random.binomial(tmp_dist, q)
+
+    a = 1.0 / (p - q)
+    b = n * q / (p - q)
+    est_dist = a * est_dist - b
+
+    return est_dist
+
+
+def rr(real_dist, eps):
+    domain = len(real_dist)
+    n = sum(real_dist)
+    ee = np.exp(eps)
+
+    p = ee / (ee + domain - 1)
+    q = 1 / (ee + domain - 1)
+
+    tmp_dist = np.copy(real_dist)
+    est_dist = np.random.binomial(tmp_dist, p - q)
+
+    n_other = n - sum(est_dist)
+    rnd_dist = np.random.randint(0, domain, n_other)
+    est_dist += np.histogram(rnd_dist, bins=range(domain + 1))[0]
+
+    a = 1.0 / (p - q)
+    b = n * q / (p - q)
+    est_dist = a * est_dist - b
+
+    return est_dist
+
+
 def sr(ori_samples, l, h, eps):
     output = (np.exp(eps) + 1) / (np.exp(eps) - 1)
     sample_size = len(ori_samples)
@@ -292,22 +353,22 @@ if __name__ == "__main__":
     # plt.bar(x, theta)
     # plt.show()
 
-    # q_ans = np.array([0, 0, 0, 0, 0, 5, 6, 5, 0, 0, 0, 0, 0])
-    # nm_r = []
-    # em_r = []
-    # pf_r = []
-    # eps = 0.1
-    # iterations = 10000
-    # for i in range(iterations):
-    #     nm_r.append(nm(q_ans, eps))
-    #     em_r.append(em(q_ans, eps))
-    #     pf_r.append(pf(q_ans, eps))
-    # plt.hist(nm_r, bins=len(q_ans))
-    # plt.show()
-    # plt.hist(em_r, bins=len(q_ans))
-    # plt.show()
-    # plt.hist(pf_r, bins=len(q_ans))
-    # plt.show()
-    # print(np.mean(np.absolute((np.array(nm_r) - 6))))
-    # print(np.mean(np.absolute((np.array(em_r) - 6))))
-    # print(np.mean(np.absolute((np.array(pf_r) - 6))))
+    q_ans = np.array([0, 0, 0, 0, 0, 5, 6, 5, 0, 0, 0, 0, 0])
+    nm_r = []
+    em_r = []
+    pf_r = []
+    eps = 0.1
+    iterations = 10000
+    for i in range(iterations):
+        nm_r.append(nm(q_ans, eps))
+        em_r.append(em(q_ans, eps))
+        pf_r.append(pf(q_ans, eps))
+    plt.hist(nm_r, bins=len(q_ans))
+    plt.show()
+    plt.hist(em_r, bins=len(q_ans))
+    plt.show()
+    plt.hist(pf_r, bins=len(q_ans))
+    plt.show()
+    print(np.mean(np.absolute((np.array(nm_r) - 6))))
+    print(np.mean(np.absolute((np.array(em_r) - 6))))
+    print(np.mean(np.absolute((np.array(pf_r) - 6))))
