@@ -3,7 +3,7 @@ from percentile_estimator.estimator_factory import PercentileEstimatorFactory
 from range_estimator.estimator_factory import RangeEstimatorFactory
 
 
-class SvtBT(Estimator):
+class NMBT(Estimator):
 
     def __init__(self, users, args):
         Estimator.__init__(self, users, args)

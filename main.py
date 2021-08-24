@@ -1,7 +1,6 @@
 import argparse
 from loguru import logger
 import multiprocessing as mp
-import os
 import sys
 import numpy as np
 
@@ -11,92 +10,55 @@ from user.user_factory import UserFactory
 
 q = mp.Queue()
 
-smooth_methods = [
-    'naive_smoother',
-    'mean_smoother',
-    'median_smoother',
-    'moving_smoother',
-    'exp_smoother',
-]
-range_methods = [
-    'basic_hierarchy',
-    'opt_fanout_hierarchy',
-    'consist_hierarchy',
-    'guess_hierarchy',
-]
+##################################
+# uncomment the following to run #
+##################################
+# ToPS visualization
+# general_main('eps_medium', 'precise', user_types=['dns_1k'], exp_round=1, methods=['svt_hie'])
+# general_main('eps', 'precise', user_types=['dns_1k'], exp_round=1, methods=['pak'])
+
+# Overall performance comparison
+# general_main('eps_medium', 'query_mse', methods=['svt_hie', 'ss_hie', 'svt_bt', 'pak'])
+
+# Smoother comparison
+# general_main('eps_medium', 'smooth',)
+
+# Hierarchy comparison
+# general_main('eps_medium', 'range',)
+
+# There is no optimal p
+# general_main('eps_range_medium', 'ell_est', user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
+# general_main('eps_range_small', 'ell_est', user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
+# general_main('eps_range_medium', 'ell_est', m=4096, user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
+# general_main('eps_range_small', 'ell_est', m=4096, user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
+
+# Compare different method to find the threshold
+# general_main('eps_medium', 'ell_est', percentile_methods=['nm_mse', 'smooth', 'smooth_pak'])
+
+# Compare different method to find threshold in LDP
+# general_main('eps_ldp', 'ell_est', range_epsilon=1, percentile_methods=['sw_mse', 'sws_mse'])
+
+# ToPL visualization
+# general_main('eps_ldp', 'precise', user_types=['dns_1k'], exp_round=1, methods=['sw_hm'])
 
 
-def pre_main():
-    # args.exp_round = int(os.cpu_count() / 2)
-    args.exp_round = 64
-    args.multi_process = True
-    args.write_file = True
-    # args.overwrite = False
-    args.overwrite = True
-    args.overwrite_method = True
-    args.overwrite_method = False
-
-    # args.exp_round = 1
-    # args.multi_process = False
-    # args.write_file = False
-
-    args.epsilon = 0.05
-    # args.epsilon = 1
-    args.range_epsilon = 0.05
-    args.range_epsilon = 1
-    args.p = 0.99499
-
-    percentile_methods = [
-        # === non-private ones
-        # 'np_p85',
-        # 'np_p90',
-        # 'np_p95',
-        # 'np_p99.5',
-        # 'np_p99.9',
-        # === dp methods
-        'em_mse',
-        # 'smooth',
-        # 'smooth_pak',
-        # === ldp methods
-        # 'sw_mse',
-        # 'sws_mse',
-    ]
-    methods = [
-        'svt_hie',
-        'ss_hie',
-        'svt_bt',
-        'pak',
-        # 'sw_hm',
-    ]
-    configs = [
-              # {'user_type': 'dns_1k'},
-              {'user_type': 'pos'},
-              {'user_type': 'fare'},
-              {'user_type': 'kosarak'},
-          ] * 3
-
-    varys = ['eps_medium']
-    # varys = ['eps_range_medium']
-    # varys = ['eps']
-    # varys = ['eps_ldp']
-
-    # args.metric = 'precise'
-    # args.exp_round = 1
-
-    # args.metric = 'smooth'
-    # args.metric = 'range'
-    args.metric = 'ell_est'
-    # args.metric = 'query_mmae'
-    for config_i, config in enumerate(configs):
-        args.user_type = config['user_type']
-        args.m = 65536
-        # args.m = 4096
+def general_main(vary, metric,
+                 user_types=('dns_1k', 'pos', 'fare', 'kosarak'),
+                 epsilon=0.05, range_epsilon=0.05, m=65536, exp_round=10,
+                 methods=None, percentile_methods=None, range_methods=None, smooth_methods=None
+                 ):
+    args.metric = metric
+    args.exp_round = exp_round
+    args.epsilon = epsilon
+    args.range_epsilon = range_epsilon
+    for config_i, user_type in enumerate(user_types):
+        args.user_type = user_type
+        args.m = m
         args.n = 2 ** 20 + args.m
 
-        for vary in varys:
-            args.vary = vary
-            logger.info('=== vary %s on %s (%d / %d) ===' % (args.vary, args.user_type, config_i + 1, len(configs)))
-            main(methods, percentile_methods, range_methods, smooth_methods)
+        args.vary = vary
+        logger.info('=== vary %s on %s (%d / %d) ===' % (args.vary, args.user_type, config_i + 1, len(user_types)))
+        main(methods, percentile_methods, range_methods, smooth_methods)
 
 
 def main(methods, percentile_methods, range_methods, smooth_methods):
@@ -193,54 +155,3 @@ parser.add_argument('--user_type', type=str, default='adult',
                     help='specify the type of the data [synthesize, password, url]')
 
 args = parser.parse_args()
-
-
-def general_main(vary, metric,
-                 user_types=('dns_1k', 'pos', 'fare', 'kosarak'),
-                 epsilon=0.05, range_epsilon=0.05, m=65536, exp_round=10,
-                 methods=None, percentile_methods=None, range_methods=None, smooth_methods=None
-                 ):
-    args.metric = metric
-    args.exp_round = exp_round
-    args.epsilon = epsilon
-    args.range_epsilon = range_epsilon
-    for config_i, user_type in enumerate(user_types):
-        args.user_type = user_type
-        args.m = m
-        args.n = 2 ** 20 + args.m
-
-        args.vary = vary
-        logger.info('=== vary %s on %s (%d / %d) ===' % (args.vary, args.user_type, config_i + 1, len(user_types)))
-        main(methods, percentile_methods, range_methods, smooth_methods)
-
-
-# ToPS visualization
-# general_main('eps_medium', 'precise', user_types=['dns_1k'], exp_round=1, methods=['svt_hie'])
-# general_main('eps', 'precise', user_types=['dns_1k'], exp_round=1, methods=['pak'])
-
-# Overall performance comparison
-# general_main('eps_medium', 'query_mse', methods=['svt_hie', 'ss_hie', 'svt_bt', 'pak'])
-
-# Smoother comparison
-# general_main('eps_medium', 'smooth',)
-
-# Hierarchy comparison
-# general_main('eps_medium', 'range',)
-
-# There is no optimal p
-# general_main('eps_range_medium', 'ell_est', user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
-# general_main('eps_range_small', 'ell_est', user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
-# general_main('eps_range_medium', 'ell_est', m=4096, user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
-# general_main('eps_range_small', 'ell_est', m=4096, user_types=['dns_1k'], percentile_methods=['np_p85', 'np_p90', 'np_p95', 'np_p99.5', 'np_p99.9', 'em_mse'])
-
-# Compare different method to find the threshold
-# general_main('eps_medium', 'ell_est', percentile_methods=['nm_mse', 'smooth', 'smooth_pak'])
-
-# Compare different method to find threshold in LDP
-# general_main('eps_ldp', 'ell_est', range_epsilon=1, percentile_methods=['sw_mse', 'sws_mse'])
-
-# ToPL visualization
-# general_main('eps_ldp', 'precise', user_types=['dns_1k'], exp_round=1, methods=['sw_hm'])
-
-# experiment
-# pre_main()

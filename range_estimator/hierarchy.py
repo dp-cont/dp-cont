@@ -39,9 +39,7 @@ class Hierarchy(Estimator):
         return count
 
     def consist(self, count):
-        # todo: assume all layers have the same variance
-        # todo: requires a complete tree
-        # todo: does not handle negative results
+        # requires a complete tree
 
         fanout = self.fanout
 

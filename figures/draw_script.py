@@ -51,9 +51,7 @@ class PlotScript(Plot):
             'truth': 'True',
 
             'svt': 'SVT-P',
-            'em_mse': 'NM-E',
             'nm_mse': 'NM-E',
-            'pf_mse': 'PF-E',
             'nm': 'EM-P',
             'np_p': 'NP-P',
             'np_p85': '85',
