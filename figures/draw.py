@@ -18,7 +18,7 @@ class Plot:
         # rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica'], 'size': 16})
         # rc('text', usetex=True)
 
-        self.folder = './'
+        self.folder = '../../../../Dropbox/Apps/ShareLaTeX/dp-cont/figure/'
         self.marker_list = [
             "^",
             "o",

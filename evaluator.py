@@ -29,6 +29,9 @@ class Evaluator(object):
         else:
             raise NotImplementedError(self.args.metric)
 
+        if self.args.exp_round == 1:
+            self.verbose_print(ret)
+
         f_name = 'tmp/%s-%d.pkl' % (self.args.metric, os.getpid())
         pickle.dump(ret, open(f_name, 'wb'))
         return f_name
@@ -79,6 +82,10 @@ class Evaluator(object):
 
         # baseline is always outputing 0
         result_dict['baseline'] = [self.metric(data_hie, zeros, query_indexes)]
+
+        # second baseline is even worse
+        # zeros[:] = 0.1 * self.users.max_ell
+        # result_dict['baseline2'] = [self.metric(data_hie, zeros, query_indexes)]
 
         return result_dict
 
@@ -235,6 +242,13 @@ class Evaluator(object):
         for i in range(n_query):
             query_indexes[i] = np.sort(np.random.choice(self.users.n - self.args.m, 2)).astype(np.int)
         return query_indexes
+
+    def verbose_print(self, ret):
+        for method in ret.keys():
+            v_str = ''
+            for v in ret[method]:
+                v_str += '%.2E, ' % v
+            logger.info('%12s: %s' % (method, v_str))
 
     def my_range_sum(self, h, l, r):
         if np.isscalar(h[0]):

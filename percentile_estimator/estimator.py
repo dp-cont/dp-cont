@@ -1,4 +1,5 @@
 import abc
+import logging
 
 
 class Estimator(object):
@@ -14,12 +15,34 @@ class Estimator(object):
     def obtain_ell(self, p=0):
         pass
 
+    # def verbose_plot_quality(self, error_1, error_2, plot_folder, plot_name):
+    #     import matplotlib.pyplot as plt
+    #     from matplotlib.pyplot import figure
+    #     plt.figure()
+    #     plt.style.use('seaborn-darkgrid')
+    #     w, h = 6.4, 3.6
+    #     figure(figsize=(w, h))
+    #     plt.rcParams["font.size"] = 18
+    #     plt.yticks(fontsize=18)
+    #     plt.yscale("log")
+    #     plt.plot(- error_1, label='noise')
+    #     plt.plot(- error_2, label='trunc')
+    #     plt.plot(- error_1 - error_2, label='quali')
+    #
+    #     plt.legend()
+    #     plt.show()
+    #     plt.savefig(plot_folder + plot_name + ".pdf", bbox_inches='tight')
+    #     plt.cla()
+
     def verbose_plot_quality(self, error_1, error_2, true_mse, plot_folder, plot_name):
         import matplotlib.pyplot as plt
         from matplotlib.pyplot import figure
+        axis_font = {'fontname': 'Times New Roman', 'size': '20'}
+        y_font = {'fontname': 'Times New Roman', 'size': '20'}
         plt.rcParams.update({'figure.autolayout': True})
         plt.autoscale()
         plt.figure()
+        # plt.style.use('seaborn-darkgrid')
         w, h = 8.7, 4.4
         figure(figsize=(w, h))
         plt.rcParams["font.family"] = "serif"
@@ -33,4 +56,6 @@ class Estimator(object):
         plt.plot(- error_1 - error_2, label='quality', linewidth=3, color=(0.3529, 0.7373, 0.5451))
         plt.plot(true_mse, label='true', linestyle='-.', linewidth=3)
         plt.legend()
+        # plt.xlim(0, 1000)
+        # plt.ylim(10 ** 2, 10 ** 8)
         plt.show()

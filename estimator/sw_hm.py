@@ -3,7 +3,6 @@ from percentile_estimator.estimator_factory import PercentileEstimatorFactory
 from range_estimator.estimator_factory import RangeEstimatorFactory
 
 
-# ToPL
 class SWHM(Estimator):
 
     def __init__(self, users, args):

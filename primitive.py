@@ -9,6 +9,11 @@ def laplace(beta, data):
     return output
 
 
+def gauss(sigma, data):
+    output = data + np.random.normal(0, sigma, len(data))
+    return output
+
+
 def smooth_ell(p_rank, b, max_ell, data):
     m = len(data)
     data = np.append([0] * m, data)
@@ -27,6 +32,34 @@ def smooth_ell(p_rank, b, max_ell, data):
     return max(local_ss)
 
 
+def svt(q_ans, eps, eps1_ratio=0, sensitivity=1, monotonic=True):
+    svt_const = 1 if monotonic else 2 ** (2 / 3)
+    eps1 = eps / (1 + svt_const)
+    eps2 = svt_const * eps / (1 + svt_const)
+
+    if eps1_ratio > 0:
+        eps1 = eps * eps1_ratio
+        eps2 = eps * (1 - eps1_ratio)
+
+    beta1 = sensitivity / eps1
+    beta2 = sensitivity / eps2 if monotonic else 2 * sensitivity / eps2
+
+    noise_0 = laplace(beta1, [0])[0]
+    noise_ans = laplace(beta2, q_ans)
+    return np.argmax(noise_ans > noise_0)
+
+
+# exponential mechanism
+def em(q_ans, eps, sensitivity=1, monotonic=True):
+    coeff = eps / sensitivity if monotonic else eps / 2 / sensitivity
+    probs = np.exp(coeff * q_ans)
+    probs = probs / sum(probs) if sum(probs) > 0 else [1] * len(probs)
+    probs = np.cumsum(probs)
+
+    rand_p = np.random.rand()
+    return np.searchsorted(probs, rand_p, side='left')
+
+
 # noisy max
 def nm(q_ans, eps, sensitivity=1, monotonic=True):
     coeff = eps / sensitivity if monotonic else eps / 2 / sensitivity
@@ -34,10 +67,20 @@ def nm(q_ans, eps, sensitivity=1, monotonic=True):
     return np.argmax(noisy_ans)
 
 
+# perturb and flip (result shows it performs similar to em in our setting)
+def pf(q_ans, eps, sensitivity=1, monotonic=True):
+    coeff = eps / sensitivity if monotonic else eps / 2 / sensitivity
+    q_ans_max = np.max(q_ans)
+    probs = np.exp(coeff * (q_ans - q_ans_max))
+
+    tmps = np.random.binomial(1, probs)
+    flip_success_indeces = np.where(tmps == 1)[0]
+    return np.random.choice(flip_success_indeces, 1)[0]
+
+
 '''some LDP primitives'''
 
 
-# stochastic rounding (Duchi et al.)
 def sr(ori_samples, l, h, eps):
     output = (np.exp(eps) + 1) / (np.exp(eps) - 1)
     sample_size = len(ori_samples)
@@ -51,7 +94,6 @@ def sr(ori_samples, l, h, eps):
     return (ns + 1) / 2 * (h - l) + l
 
 
-# piecewise mechanism (Wang et al.)
 def pm(ori_samples, l, h, eps):
     c = (np.exp(eps / 2) + 1) / (np.exp(eps / 2) - 1)
     p = (np.exp(eps) - np.exp(eps / 2)) / (2 * np.exp(eps / 2) + 2)
@@ -70,6 +112,7 @@ def pm(ori_samples, l, h, eps):
         else:
             ns[i] = ((y[i] - (l + c) * q - (c - 1) * p) / q + r)
 
+    # mean = (np.mean(ns) + 1) / 2 * (h - l) + l
     return (ns + 1) / 2 * (h - l) + l
 
 
@@ -85,7 +128,6 @@ def hm(ori_samples, l, h, eps):
     return ns
 
 
-# square wave (Li et al.)
 def sw(ori_samples, l, h, eps, randomized_bins=1024, domain_bins=1024, smoothing=False):
     ee = np.exp(eps)
     w = ((eps * ee) - ee + 1) / (2 * ee * (ee - 1 - eps)) * 2
@@ -239,3 +281,33 @@ def EM(n, ns_hist, transform, max_iteration, loglikelihood_threshold):
 
         r += 1
     return theta
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    ## ori = np.random.normal(-0.3, 0.3, 50000)
+    # ori = np.random.uniform(0, 1, 50000)
+    # theta = sw(ori, 0, 1, 2, randomized_bins=256, domain_bins=256, smoothing=True)
+    # x = [i for i in range(len(theta))]
+    # plt.bar(x, theta)
+    # plt.show()
+
+    # q_ans = np.array([0, 0, 0, 0, 0, 5, 6, 5, 0, 0, 0, 0, 0])
+    # nm_r = []
+    # em_r = []
+    # pf_r = []
+    # eps = 0.1
+    # iterations = 10000
+    # for i in range(iterations):
+    #     nm_r.append(nm(q_ans, eps))
+    #     em_r.append(em(q_ans, eps))
+    #     pf_r.append(pf(q_ans, eps))
+    # plt.hist(nm_r, bins=len(q_ans))
+    # plt.show()
+    # plt.hist(em_r, bins=len(q_ans))
+    # plt.show()
+    # plt.hist(pf_r, bins=len(q_ans))
+    # plt.show()
+    # print(np.mean(np.absolute((np.array(nm_r) - 6))))
+    # print(np.mean(np.absolute((np.array(em_r) - 6))))
+    # print(np.mean(np.absolute((np.array(pf_r) - 6))))
