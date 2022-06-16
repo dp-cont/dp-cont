@@ -3,7 +3,7 @@
 Continuous Release of Data Streams under both Centralized and Local Differential Privacy
 =====
 
-This repository provides code to accompany the paper Continuous Release of Data Streams under both Centralized and Local Differential Privacy which was accepted to ACM Conference on Computer and Communications Security (CCS) 2021.
+This repository provides code to accompany the paper [Continuous Release of Data Streams under both Centralized and Local Differential Privacy](https://dl.acm.org/doi/pdf/10.1145/3460120.3484750) which was accepted to ACM Conference on Computer and Communications Security (CCS) 2021.
 
 
 Installing
@@ -39,6 +39,6 @@ Reproducing Results
 Building on this Work
 =====
 
-We encourage others to improve our work and to integrate it with their own applications. We provide it under the MIT license.  Contact: Tianhao Wang at tianhao@cmu.edu.
+We encourage others to improve our work and to integrate it with their own applications. We provide it under the MIT license.  Contact: Tianhao Wang at tianhao@virginia.edu.
 
 
