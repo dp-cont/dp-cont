@@ -3,7 +3,12 @@
 Continuous Release of Data Streams under both Centralized and Local Differential Privacy
 =====
 
-This repository provides code to accompany the paper [Continuous Release of Data Streams under both Centralized and Local Differential Privacy](https://dl.acm.org/doi/pdf/10.1145/3460120.3484750) which was accepted to ACM Conference on Computer and Communications Security (CCS) 2021.
+This repository provides code to accompany the paper [Continuous Release of Data Streams under both Centralized and Local Differential Privacy](https://dl.acm.org/doi/pdf/10.1145/3460120.3484750) which was accepted to ACM Conference on Computer and Communications Security (CCS) 2021. (the arxiv version 
+
+Update: 
+
+- the arxiv version https://arxiv.org/abs/2005.11753 incorporates some fixes from the CCS version.
+- 'hm' (and other LDP estimators) was mistakenly deleted ([source](https://github.com/dp-cont/dp-cont/blob/5a0e1d6f833ae5527c30f4df49f720667c9cad63/range_estimator/hm.py) here). I may not have the bandwidth to fix it. Feel free to submit a pull request.
 
 
 Installing
